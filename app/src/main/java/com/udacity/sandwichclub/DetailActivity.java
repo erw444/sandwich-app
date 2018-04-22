@@ -4,23 +4,35 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
 
+import org.w3c.dom.Text;
+
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
+
+    private TextView mAlsoKnownAsTextView;
+    private TextView mIngredientsTextView;
+    private TextView mPlaceOfOriginTextView;
+    private TextView mDescriptionTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
+        ImageView sandwichImageView = findViewById(R.id.image_iv);
+        mAlsoKnownAsTextView = findViewById(R.id.detail_also_known_as);
+        mIngredientsTextView = findViewById(R.id.detail_ingredients);
+        mDescriptionTextView = findViewById(R.id.detail_description);
+        mPlaceOfOriginTextView = findViewById(R.id.detail_place_of_origin);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -43,10 +55,10 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        populateUI();
+        populateUI(sandwich);
         Picasso.with(this)
                 .load(sandwich.getImage())
-                .into(ingredientsIv);
+                .into(sandwichImageView);
 
         setTitle(sandwich.getMainName());
     }
@@ -56,7 +68,16 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
+    private void populateUI(Sandwich sandwich) {
+        mPlaceOfOriginTextView.setText(sandwich.getPlaceOfOrigin());
+        mDescriptionTextView.setText(sandwich.getDescription());
 
+        for(int i = 0; i < sandwich.getIngredients().size(); i++){
+            mIngredientsTextView.append(sandwich.getIngredients().get(i) + "\n");
+        }
+
+        for(int aka = 0; aka < sandwich.getAlsoKnownAs().size(); aka++){
+            mAlsoKnownAsTextView.append(sandwich.getAlsoKnownAs().get(aka) + "\n");
+        }
     }
 }
